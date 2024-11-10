@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #4e73df; /* Dark blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .game-container {
+            background-color: #f8f9fc; /* Light background for the game container */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h1 {
+            color: #1cc88a; /* Green color for the title */
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #eaf0f1; /* Off-white cell background */
+            border: 2px solid #4e73df; /* Blue border */
+            font-size: 36px;
+            color: #333; /* Dark text color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .cell:hover {
+            background-color: #1cc88a; /* Green hover effect */
+            color: #fff; /* White text on hover */
+        }
+
+        .status {
+            margin-top: 20px;
+            color: #1cc88a; /* Green status text */
+            font-size: 20px;
+        }
+
+        .reset-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #e74a3b; /* Red reset button */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background-color: #d9534f; /* Darker red on hover */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Tic-Tac-Toe</h1>
+        <div class="board" id="board"></div>
+        <div class="status" id="status">Player X's Turn</div>
+        <button class="reset-btn" id="resetBtn">Reset Game</button>
+    </div>
+
+    <script>
+        const boardElement = document.getElementById('board');
+        const statusElement = document.getElementById('status');
+        const resetButton = document.getElementById('resetBtn');
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameOver = false;
+
+        // Generate the Tic-Tac-Toe board
+        function generateBoard() {
+            boardElement.innerHTML = '';
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+                cell.textContent = board[i];
+                cell.addEventListener('click', handleCellClick);
+                boardElement.appendChild(cell);
+            }
+        }
+
+        // Handle cell click
+        function handleCellClick(event) {
+            if (gameOver) return;
+            const index = event.target.dataset.index;
+            if (board[index] !== '') return;
+
+            board[index] = currentPlayer;
+            event.target.textContent = currentPlayer;
+
+            if (checkWinner()) {
+                statusElement.textContent = `Player ${currentPlayer} Wins!`;
+                gameOver = true;
+            } else if (board.every(cell => cell !== '')) {
+                statusElement.textContent = "It's a Draw!";
+                gameOver = true;
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                statusElement.textContent = `Player ${currentPlayer}'s Turn`;
+            }
+        }
+
+        // Check if there is a winner
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // horizontal
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // vertical
+                [0, 4, 8], [2, 4, 6]              // diagonal
+            ];
+            return winPatterns.some(pattern => {
+                const [a, b, c] = pattern;
+                return board[a] === currentPlayer && board[b] === currentPlayer && board[c] === currentPlayer;
+            });
+        }
+
+        // Reset the game
+        resetButton.addEventListener('click', () => {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameOver = false;
+            statusElement.textContent = "Player X's Turn";
+            generateBoard();
+        });
+
+        // Initial Board Render
+        generateBoard();
+    </script>
+
+</body>
+</html>
